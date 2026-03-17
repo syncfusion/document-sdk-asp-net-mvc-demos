@@ -1,4 +1,4 @@
-# Syncfusion® Document SDK ASP.NET MVC samples      
+﻿# Syncfusion® Document SDK ASP.NET MVC samples      
 
 This repository contains the demos of [Syncfusion Document SDK for ASP.NET MVC](https://www.syncfusion.com/document-processing). This is the best place to check our document processing libraries to get more insight about the usage of APIs. The Document SDK includes comprehensive file format libraries for creating, manipulating, and converting various document formats, including PDF, Word, Excel, and PowerPoint.
 
@@ -58,4 +58,4 @@ The Syncfusion license that contains the terms and conditions can be found at
 * [ASP.NET MVC documentation](https://ej2.syncfusion.com/aspnetmvc/documentation/introduction)
 * [ASP.NET MVC components](https://www.syncfusion.com/aspnet-mvc-ui-controls/)
 * [ASP.NET MVC live demos](https://ej2.syncfusion.com/aspnetmvc/) 
-<p>Copyright © 2001-2026 Syncfusion, Inc. Updated on 2026-02-06 at precisely 17:12:36 EST.</p> 
+<p>Copyright © 2001-2026 Syncfusion, Inc. Updated on 2026-03-17 at precisely 11:44:20 EST.</p> 
