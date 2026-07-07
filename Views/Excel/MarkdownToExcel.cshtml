@@ -1,0 +1,59 @@
+@using Syncfusion.EJ2;
+
+@section ActionDescription{
+    This sample demonstrates the conversion of Markdown documents to Excel file using Essential XlsIO.
+}
+@section Meta{
+                    <meta name="description" content="This example demonstrates the Markdown To Excel in ASP.NET MVC Excel (XlsIO) library. Explore here for more details."/>
+                }
+@section Description{
+    <p>
+        Essential XlsIO supports to convert Markdown data to Excel files by simply saving the workbook.
+    </p>
+    <br />
+    <b>Features:</b>
+    <br />
+    <br />
+    <ul>
+        <li>Convert Markdown documents into Excel files with ease.</li>
+        <li>Preserve text, numbers, date/time values, and formulas during conversion.</li>
+        <li>Retain embedded images in the output Excel
+    </ul>
+}
+
+@section ControlsSection{
+    <div class="control-section">
+        @{Html.BeginForm("MarkdownToExcel", "Excel", FormMethod.Post);
+            {
+                <div class="Common">
+                    <div class="tablediv">
+                        <div class="rowdiv">
+                                    <p style="font-weight:normal">
+                                        Click the "Input Template" button to view the input Markdown document. Please note that Please note that a Markdown viewer or editor is required to view this document
+                                    </p>
+                            <p style="font-weight:normal">
+                                Click the "Convert to Excel" button to view the converted Excel file.
+                            </p>
+                        </div>
+                        <br />
+                        <div class="rowdiv">
+                            <div class="celldiv">
+                                <input id="inputTemplate" class="e-btn" type="submit" name="button" value="Input Template" style="width:150px;" />
+                                &nbsp;&nbsp;&nbsp;
+                                <input id="convertToExcel" class="e-btn" type="submit" name="button" value="Convert to Excel" style="width:160px;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                Html.EndForm();
+            }
+        }
+    </div>
+}
+
+@section Title{
+                    <title>ASP.NET MVC Excel (XlsIO) library - Markdown To Excel Example - Syncfusion Demos </title> 
+                }
+@section Header{
+                    <h1 class='sb-sample-text'>Example of Markdown To Excel in ASP.NET MVC Excel (XlsIO) Library</h1>
+                }
