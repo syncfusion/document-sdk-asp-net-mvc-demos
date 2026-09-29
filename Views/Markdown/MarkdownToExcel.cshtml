@@ -1,0 +1,68 @@
+@using Syncfusion.EJ2;
+@{
+    ViewData["Title"] = "    Essential Markdown : Export, Markdown To Excel, Conversion : Syncfusion";
+}
+@section ControlsSection{
+    <div class="control-section">
+        @{Html.BeginForm("MarkdownToExcel", "Markdown", FormMethod.Post, new { enctype = "multipart/form-data" });
+            {
+                <div style="margin-top: 10px">
+                    Select Document
+                    <br />
+                    <input type="file" name="file" id="fileUpload" accept=".md" style="display:block;visibility:hidden;width:0;height:0;" />
+                    <input type="button" name="uploadButton" value="Choose File" onclick="openFile()" />
+                    <input type="text" id="fileName" value="MarkdownToExcel.md" style="border:none;" readonly="readonly" />
+                    <div style="margin-top: 8px">
+                        Click the button to view the Excel document generated using the .NET Excel (XlsIO) and .NET Markdown libraries. Please note that Microsoft Excel Viewer or Microsoft Excel is required to view the Excel document.
+                        <div style="margin-top: 8px">
+                            <input class="e-btn" type="submit" value="Convert To Excel" name="button" style="width:170px;text-transform:capitalize" />
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="text-danger">
+                    @ViewData["Message"]
+                </div>
+                Html.EndForm();
+            }
+        }
+    </div>
+    <script>
+        function openFile() {
+            document.getElementById('fileUpload').click();
+            document.getElementById('fileUpload').addEventListener('change', updateFileName, false);
+        }
+        function updateFileName(evt) {
+            var upoadedFiles = evt.target.files;
+            filename = upoadedFiles[0].name;
+            document.getElementById('fileName').value = filename;
+        }
+    </script>
+}
+@section ActionDescription{
+    This sample demonstrates how to convert Markdown documents to Excel documents using .NET Excel (XlsIO) and .NET Markdown libraries.
+}
+@section Description{
+    <div>
+        The .NET Excel (XlsIO) library provides support to convert Markdown documents to Excel format.
+        <ul>
+            <li>
+                Supports conversion of Markdown documents to Excel format, including text, numbers, formulas, and number formatting.
+            </li>
+        </ul>
+    </div>
+    <div style="margin-top: 15px">
+        More information about Markdown to Excel conversion can be found in this
+        <a href="https://help.syncfusion.com/document-processing/excel/conversions/markdown-to-excel/overview">documentation</a>
+        section.
+    </div>
+}
+@section Meta{
+    <meta name="description" content="This example demonstrates the conversion of Markdown To Excel in ASP.NET MVC Markdown library. Explore here for more details." />
+}
+@section Title{
+    <title>ASP.NET MVC Markdown library - Markdown To Excel Example - Syncfusion Demos </title>
+}
+@section Header{
+    <h1 class='sb-sample-text'>Example of Markdown To Excel in ASP.NET MVC Markdown Library</h1>
+}
