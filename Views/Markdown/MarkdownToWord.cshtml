@@ -1,0 +1,87 @@
+@using Syncfusion.EJ2
+@{
+    ViewData["Title"] = "    Essential Markdown : Export, Markdown To Word, Conversion : Syncfusion";
+ }
+@section ControlsSection{
+    <div class="control-section">
+        @{Html.BeginForm("MarkdownToWord", "Markdown", FormMethod.Post, new { enctype = "multipart/form-data" });
+            {
+                <div style="margin-top: 10px">
+                    Select Document
+                    <br />
+                    <input type="file" name="file" id="fileUpload" accept=".md" style="display:block;visibility:hidden;width:0;height:0;" />
+                    <input type="button" name="uploadButton" value="Choose File" onclick="openFile()" />
+                    <input type="text" id="fileName" value="MarkdownToWord.md" style="border:none;" readonly="readonly"/>
+                    <div style="margin-top: 8px">
+                        Click the button to view the generated Word document using the .NET Word (DocIO) and .NET Markdown libraries. Please note that Microsoft Word Viewer or Microsoft Word is required to view the resultant Word document.
+                                <div style="margin-top: 8px">
+                                    Save As :
+                                    <input type="radio" id="rdButtonDoc" name="Group1" value="WordDoc" style="margin-left: 7px" />
+                                    <label for="rdButtonDoc" style="font-size:13px;font-weight:normal;text-align:match-parent" data-toggle="tooltip" title="Saves the resultant document as Word Doc format">DOC</label>
+                                    &nbsp;
+                                    <input type="radio" id="rdButtonDocx" name="Group1" value="WordDocx" style="margin-left: 7px" checked="checked" />
+                                    <label for="rdButtonDocx" style="font-size:13px;font-weight:normal;text-align:match-parent" data-toggle="tooltip" title="Saves the resultant document as Word Docx format">DOCX</label>
+                                    &nbsp;
+                                    <input type="radio" id="rdButtonRtf" name="Group1" value="WordRtf" style="margin-left: 7px" />
+                                    <label for="rdButtonRtf" style="font-size:13px;font-weight:normal;text-align:match-parent" data-toggle="tooltip" title="Saves the resultant document as RTF format">RTF</label>
+                                    &nbsp;
+                                    <input type="radio" id="rdButtonWordml" name="Group1" value="WordML" style="margin-left: 7px" />
+                                    <label for="rdButtonWordml" style="font-size:13px;font-weight:normal;text-align:match-parent" data-toggle="tooltip" title="Saves the resultant document as WordML format">WordML</label>
+                                </div>
+                        <div style="margin-top: 8px">
+                            <input class="e-btn" type="submit" value="Generate Document" name="button" style="width:170px;text-transform:capitalize" />
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="text-danger">
+                    @ViewData["Message"]
+                </div>
+                Html.EndForm();
+            }
+        }
+    </div>
+    <script>
+         function openFile() {
+             document.getElementById('fileUpload').click();
+             document.getElementById('fileUpload').addEventListener('change', updateFileName, false);
+        }
+        function updateFileName(evt) {
+            var upoadedFiles = evt.target.files;
+            filename = upoadedFiles[0].name;
+            document.getElementById('fileName').value = filename;
+        }
+    </script>
+}
+@section ActionDescription{
+    <div>
+        This sample demonstrates how to convert a Markdown file to a Word document using .NET Word (DocIO) and .NET Markdown libraries.
+    </div>
+}
+@section Description{
+    <div>
+        The .NET Word (DocIO) library provides support to convert Markdown files to Word documents and vice versa.
+        <ul>
+            <li>
+                You can convert headings, tables, hyperlinks, numbered and bulleted list, and images from Markdown to Word documents.
+            </li>
+            <li>
+                You can customize images while importing Markdown files.
+            </li>
+        </ul>
+    </div>
+    <div style="margin-top: 15px">
+        More information about Markdown to Word conversion can be found in this
+        <a href="https://help.syncfusion.com/document-processing/word/conversions/markdown-to-word-conversion">documentation</a>
+        section.
+    </div>
+}
+@section Meta{
+                    <meta name="description" content="This example demonstrates the conversion of Markdown to Word document in in ASP.NET MVC Markdown library. Explore here for more details."/>
+                }
+@section Title{
+                    <title>ASP.NET MVC Markdown library - Markdown to Word Example - Syncfusion Demos</title> 
+                }
+@section Header{
+                    <h1 class='sb-sample-text'>Example of Markdown to Word in ASP.NET MVC Markdown Library</h1>
+                }

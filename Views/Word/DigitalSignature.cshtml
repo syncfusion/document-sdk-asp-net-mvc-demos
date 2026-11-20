@@ -1,0 +1,304 @@
+@section ControlsSection
+{
+    <div class="control-section">
+
+        @{
+            Html.BeginForm(
+                "DigitalSignature",
+                "Word",
+                FormMethod.Post,
+                new
+                {
+                    enctype = "multipart/form-data"
+                });
+
+            {
+                <div class="tablediv" style="font-size:14px">
+                    <div class="rowdiv">
+                        Click the button to create and digitally sign a Word document using the .NET Word (DocIO) Library.
+                        Please note that a valid certificate is required to digitally sign the generated document.
+                    </div>
+                </div>
+
+                <div style="margin-top:10px; font-weight:bold;">
+                    Signature Settings
+                </div>
+
+                <div style="border:1px solid #b5c7e3; padding:10px;">
+
+                    <div>
+                        <label style="font-weight:bold; margin-right:10px;">
+                            Signature Standard :
+                        </label>
+
+                        <input type="radio"
+                               id="xmlDsig"
+                               name="SignatureStandard"
+                               value="XML-DSig"
+                               checked="checked" />
+
+                        <label for="xmlDsig"
+                               style="font-weight:normal; margin-right:15px;">
+                            XML-DSig
+                        </label>
+
+                        <input type="radio"
+                               id="xades"
+                               name="SignatureStandard"
+                               value="XAdES" />
+
+                        <label for="xades"
+                               style="font-weight:normal;">
+                            XAdES
+                        </label>
+                    </div>
+
+                    <div style="margin-top:20px;">
+                        <label style="font-weight:bold; margin-right:28px;">
+                            Signature Type :
+                        </label>
+
+                        <input type="radio"
+                               id="visible"
+                               name="SignatureType"
+                               value="Visible"
+                               checked="checked"
+                               onclick="toggleSignatureImage()" />
+
+                        <label for="visible"
+                               style="font-weight:normal; margin-right:15px;">
+                            Visible
+                        </label>
+
+                        <input type="radio"
+                               id="invisible"
+                               name="SignatureType"
+                               value="Invisible"
+                               onclick="toggleSignatureImage()" />
+
+                        <label for="invisible"
+                               style="font-weight:normal;">
+                            Invisible
+                        </label>
+                    </div>
+
+                </div>
+
+
+                <div style="margin-top:15px; font-weight:bold;">
+                    Sign new Word document
+                </div>
+
+                <div style="border:1px solid #b5c7e3; padding:10px;">
+
+                    <div>
+                        Create a new Word document and digitally sign it using the selected signature settings.
+                    </div>
+
+                    <div style="margin-top:10px;">
+                        <input type="submit"
+                               class="e-btn"
+                               name="submit"
+                               value="Create and Sign Word Document"
+                               style="text-transform:capitalize;" />
+                    </div>
+
+                </div>
+
+
+                <div style="margin-top:15px; font-weight:bold;">
+                    Sign existing Word document
+                </div>
+
+                <div style="border:1px solid #b5c7e3; padding:10px;">
+
+                    <div>
+                        <label style="font-weight:normal;">
+                            Source
+                        </label>
+                    </div>
+
+                    <div style="margin-top:5px;">
+                        <input type="file"
+                               name="wordDocument"
+                               accept=".docx" />
+                    </div>
+
+
+                    <div id="signatureImageRow"
+                         style="margin-top:20px;">
+
+                        <div>
+                            <label style="font-weight:normal;">
+                                Signature Image
+                            </label>
+                        </div>
+
+                        <div style="margin-top:5px;">
+                            <input type="file"
+                                   name="image"
+                                   accept=".png,.jpg,.jpeg" />
+                        </div>
+
+                    </div>
+
+
+                    <div style="margin-top:20px;">
+
+                        <div>
+                            <label style="font-weight:normal;">
+                                Certificate
+                            </label>
+                        </div>
+
+                        <div style="margin-top:5px;">
+                            <input type="file"
+                                   name="certificate"
+                                   accept=".pfx" />
+                        </div>
+
+                    </div>
+
+
+                    <div style="margin-top:20px;">
+
+                        <label style="font-weight:normal;
+                                      display:inline-block;
+                                      width:110px;">
+                            Password
+                        </label>
+
+                        <input type="password"
+                               name="password"
+                               style="width:200px;" />
+
+                    </div>
+
+
+                    <div style="margin-top:8px;">
+
+                        <label style="font-weight:normal;
+                                      display:inline-block;
+                                      width:110px;">
+                            Comment
+                        </label>
+
+                        <input type="text"
+                               name="comment"
+                               style="width:200px;" />
+
+                    </div>
+
+
+                    <div style="margin-top:10px;">
+
+                        <input type="submit"
+                               class="e-btn"
+                               name="submit"
+                               value="Sign Word Document"
+                               style="text-transform:capitalize;" />
+
+                    </div>
+
+
+                    @if (ViewBag.Message != null)
+                    {
+                        <div style="margin-top:10px; color:red;">
+                            @ViewBag.Message
+                        </div>
+                    }
+
+                </div>
+
+                Html.EndForm();
+            }
+        }
+
+    </div>
+}
+
+
+@section ActionDescription
+{
+    <div id="action-description" style="margin-top:10px;">
+        This sample demonstrates how to digitally sign a Word document using the .NET Word Library (DocIO).
+    </div>
+}
+
+
+@section Description
+{
+    <div>
+        The .NET Word Library (DocIO) allows you to secure Word documents by
+        applying digital signatures programmatically to protect content
+        authenticity and integrity.
+
+        <ul>
+            <li>
+                Digitally sign Word documents using X509 certificates such as
+                PFX files with private keys.
+            </li>
+
+            <li>
+                Sign documents with either visible signatures showing a
+                graphical signature or invisible cryptographic signatures.
+            </li>
+
+            <li>
+                Add, remove, and verify digital signatures programmatically
+                within your document workflows.
+            </li>
+        </ul>
+    </div>
+
+    <div style="margin-top:15px;">
+        More information about Digital Signature can be found in this
+        <a href="https://help.syncfusion.com/document-processing/word/word-library/net/working-with-digital-signature"
+           aria-label="Documentation">
+            Documentation
+        </a>
+        section.
+    </div>
+}
+
+
+@section Meta
+{
+    <meta name="description"
+          content="This example demonstrates how to digitally sign Word documents using the ASP.NET MVC Word Library (DocIO)." />
+}
+
+
+@section Title
+{
+    <title>
+        ASP.NET MVC Word Library - Digital Signature Example - Syncfusion Demos
+    </title>
+}
+
+
+@section Header
+{
+    <h1 class="sb-sample-text">
+        ASP.NET MVC Word Library - Digital Signature Example
+    </h1>
+}
+
+
+<script>
+    function toggleSignatureImage() {
+
+        var invisible =
+            document.getElementById("invisible").checked;
+
+        var imageRow =
+            document.getElementById("signatureImageRow");
+
+        if (invisible) {
+            imageRow.style.display = "none";
+        }
+        else {
+            imageRow.style.display = "block";
+        }
+    }
+</script>

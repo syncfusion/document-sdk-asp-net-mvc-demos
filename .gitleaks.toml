@@ -1,0 +1,14 @@
+# Gitleaks configuration
+# https://github.com/gitleaks/gitleaks
+
+title = "ej2-document-processing-aspmvc-samples gitleaks config"
+
+# Global allowlist to skip known noisy paths. The component-samples
+# directory contains minified third-party CSS theme files that
+# regularly trigger false positives (e.g. token-shaped strings in
+# bundled stylesheets).
+[allowlist]
+  paths = [
+    '''Content/styles/''',
+  ]
+  description = "Minified third-party CSS assets - not source code"

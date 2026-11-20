@@ -1,0 +1,451 @@
+@using System.Collections.Generic
+@{
+    bool compressImage = (ViewData["compressImage"] as bool?) ?? true;
+    int imageQuality = (ViewData["imageQuality"] as int?) ?? 50;
+    bool jpxDecodeEnabled = (ViewData["jpxDecodeEnabled"] as bool?) ?? true;
+    bool downsampleImages = (ViewData["downsampleImages"] as bool?) ?? true;
+    string downsampleAlgorithm = (ViewData["downsampleAlgorithm"] as string) ?? "Bicubic";
+    int targetDpi = (ViewData["targetDpi"] as int?) ?? 150;
+    bool optPageContents = (ViewData["optPageContents"] as bool?) ?? true;
+    bool optFont = (ViewData["optFont"] as bool?) ?? true;
+    bool removeMetaData = (ViewData["removeMetaData"] as bool?) ?? true;
+
+    var algorithmItems = new List<object>
+    {
+        new { text = "Bicubic", value = "Bicubic" },
+        new { text = "Bilinear", value = "Bilinear" },
+        new { text = "Lanczos", value = "Lanczos" },
+        new { text = "Nearest neighbor", value = "NearestNeighbor" }
+    };
+
+    var imageQualityItems = new List<object>();
+    for (int qualityStep = 10; qualityStep <= 100; qualityStep += 10)
+    {
+        imageQualityItems.Add(new { text = qualityStep.ToString(), value = qualityStep.ToString() });
+    }
+    if (imageQuality % 10 != 0)
+    {
+        imageQuality = Math.Min(100, Math.Max(10, (int)Math.Round(imageQuality / 10.0) * 10));
+    }
+}
+@section ControlsSection{
+
+    <style>
+        .cmp-error {
+            color: #d32f2f;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 8px 0 0 0;
+        }
+        .cmp-intro {
+            font-size: 14px;
+            margin: 0 0 16px 0;
+        }
+        .cmp-file-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .cmp-file-name {
+            font-size: 14px;
+            font-weight: 400;
+        }
+        .cmp-file-input {
+            display: block;
+            visibility: hidden;
+            width: 0;
+            height: 0;
+        }
+        .cmp-heading {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 18px 0 10px 0;
+        }
+        .cmp-panel {
+            background: transparent;
+            border: 1px solid rgba(128, 128, 128, .35);
+            border-radius: 4px;
+            padding: 20px 24px;
+        }
+        .cmp-desc {
+            font-size: 13px;
+            font-weight: 400;
+            opacity: .7;
+            margin: 4px 0 0 28px;
+        }
+        .cmp-hint {
+            font-size: 13px;
+            font-weight: 400;
+            opacity: .7;
+            margin: 6px 0 0 0;
+        }
+        .cmp-warning {
+            font-size: 13px;
+            font-weight: 400;
+            opacity: .7;
+            margin: 6px 0 0 0;
+            display: none;
+        }
+        .cmp-warning.cmp-visible {
+            display: block;
+        }
+        .cmp-group {
+            margin-top: 14px;
+        }
+        .cmp-indent {
+            margin-left: 32px;
+            margin-top: 12px;
+            padding-left: 16px;
+        }
+        .cmp-disabled {
+            opacity: .5;
+        }
+        .cmp-row {
+            display: grid;
+            grid-template-columns: 170px minmax(0, 1fr) auto;
+            gap: 12px;
+            align-items: center;
+            margin-top: 14px;
+        }
+        .cmp-row-label {
+            font-size: 14px;
+            font-weight: 400;
+        }
+        .cmp-unit {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .cmp-divider {
+            border: 0;
+            margin: 18px 0;
+        }
+        .cmp-flags {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px 20px;
+        }
+        .cmp-submit {
+            margin-top: 18px;
+        }
+        @@media (max-width: 720px) {
+            .cmp-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .cmp-flags {
+                grid-template-columns: 1fr;
+            }
+            .cmp-indent {
+                margin-left: 12px;
+            }
+            .cmp-panel {
+                padding: 16px;
+            }
+        }
+    </style>
+
+    <div class="control-section">
+        @{Html.BeginForm("compressexistingpdf", "pdf", FormMethod.Post, new { enctype = "multipart/form-data", id = "compressPDF", @onsubmit = "return appendHashToAction(this);" });
+            {
+                <p class="cmp-intro">Choose a PDF file, set the compression options, and click Compress PDF to download the smaller file.</p>
+
+                <div class="cmp-file-row">
+                    <input type="button" class="e-btn" value="Choose File" onclick="openPageCompress()">
+                    <span id="fileNameBoxCompress" class="cmp-file-name">No file chosen</span>
+                    <input type="file" name="file" id="fileUploadCompress" accept="application/pdf" class="cmp-file-input" />
+                </div>
+
+                <div id="errorlabel" value="error">
+                    @if (ViewData["lab"] != null)
+                    {
+                        <p class="cmp-error">@ViewData["lab"]</p>
+                    }
+                </div>
+                <div class="alert alert-info" id="compressStatus" style="display:none">
+                    The file compressed successfully.
+                </div>
+
+                <p class="cmp-heading">Compression Options</p>
+                <div class="cmp-panel">
+                    <div class="cmp-option">
+                        @Html.EJS().CheckBox("compressImage").Value("true").Checked(compressImage).Label("Compress Image").Change("onCompressImageChanged").HtmlAttributes(new Dictionary<string, object> { { "id", "compressImage" } }).Render()
+                        <p class="cmp-desc">Re-encodes images at a lower quality to reduce file size.</p>
+                    </div>
+
+                    <div id="cmpImageGroup" class="cmp-indent">
+                        <div class="cmp-row">
+                            <label class="cmp-row-label" for="imageQuality">Image Quality</label>
+                            <div>
+                                @Html.EJS().DropDownList("imageQuality").DataSource(imageQualityItems).Width("120px").PopupHeight("220px").Value(imageQuality.ToString()).Change("onQualityChanged").HtmlAttributes(new Dictionary<string, object> { { "id", "imageQuality" } }).Render()
+                                <p id="qualityWarning" class="cmp-warning">Below 30%, images may look blurry or blocky.</p>
+                            </div>
+                            <div></div>
+                        </div>
+
+                        <div class="cmp-group">
+                            @Html.EJS().CheckBox("jpxDecodeEnabled").Value("true").Checked(jpxDecodeEnabled).Label("Use JPXDecode Compression").HtmlAttributes(new Dictionary<string, object> { { "id", "jpxDecodeEnabled" } }).Render()
+                            <p class="cmp-desc">Uses JPEG 2000 for smaller images. Very old PDF readers may not open the result.</p>
+                        </div>
+
+                        <div class="cmp-group">
+                            @Html.EJS().CheckBox("downsampleImages").Value("true").Checked(downsampleImages).Label("Enable Image Downsampling").Change("onDownsampleChanged").HtmlAttributes(new Dictionary<string, object> { { "id", "downsampleImages" } }).Render()
+                            <p class="cmp-desc">Lowers the resolution of large images. This usually saves the most space.</p>
+                        </div>
+
+                        <div id="cmpDownsampleGroup" class="cmp-indent">
+                            <div class="cmp-row">
+                                <label class="cmp-row-label" for="downsampleAlgorithm">Downsampling Algorithm</label>
+                                <div>
+                                    @Html.EJS().DropDownList("downsampleAlgorithm").DataSource(algorithmItems).Width("240px").PopupHeight("220px").Value(downsampleAlgorithm).Change("onAlgorithmChanged").HtmlAttributes(new Dictionary<string, object> { { "id", "downsampleAlgorithm" } }).Render()
+                                    <p id="algorithmHint" class="cmp-hint"></p>
+                                </div>
+                                <div></div>
+                            </div>
+
+                            <div class="cmp-row">
+                                <label class="cmp-row-label" for="targetDpi">Target DPI</label>
+                                <div class="cmp-unit">
+                                    @Html.EJS().NumericTextBox("targetDpi").Min(36).Max(2400).Value(targetDpi).Format("n0").Width("140px").ShowSpinButton(true).Change("onDpiBoxChanged").Blur("onDpiBoxBlur").HtmlAttributes(new Dictionary<string, object> { { "aria-label", "Target DPI" } }).Render()
+                                    <span>DPI (36&ndash;2400)</span>
+                                </div>
+                                <div></div>
+                            </div>
+                            <p class="cmp-hint">72 DPI (Screen) · 150 DPI (Email) · 300 DPI (Print)</p>
+                        </div>
+                    </div>
+
+                    <hr class="cmp-divider" />
+
+                    <div class="cmp-flags">
+                        <div>
+                            @Html.EJS().CheckBox("optPageContents").Value("true").Checked(optPageContents).Label("Optimize Page Contents").HtmlAttributes(new Dictionary<string, object> { { "id", "optPageContents" } }).Render()
+                            <p class="cmp-desc">Removes unused objects and optimizes page resources.</p>
+                        </div>
+                        <div>
+                            @Html.EJS().CheckBox("optFont").Value("true").Checked(optFont).Label("Optimize Font").HtmlAttributes(new Dictionary<string, object> { { "id", "optFont" } }).Render()
+                            <p class="cmp-desc">Embeds only the characters the document uses.</p>
+                        </div>
+                        <div>
+                            @Html.EJS().CheckBox("removeMetaData").Value("true").Checked(removeMetaData).Label("Remove Metadata Information").HtmlAttributes(new Dictionary<string, object> { { "id", "removeMetaData" } }).Render()
+                            <p class="cmp-desc">Removes author, title, and other document details.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cmp-submit">
+                    <input id="submit" class="e-btn" type="submit" value="Compress PDF" style="width:150px; text-transform:capitalize" />
+                </div>
+            Html.EndForm();
+            }}
+    </div>
+}
+<script type="text/javascript">
+    var cmpSyncing = false;
+    var cmpDpiMin = 36;
+    var cmpDpiMax = 2400;
+    var cmpAlgorithmHints = {
+        Bicubic: "High quality and slightly slower. Recommended for most documents.",
+        Bilinear: "Smooth and efficient, a little softer than bicubic.",
+        Lanczos: "Sharpest result for photos and fine detail.",
+        NearestNeighbor: "Fastest. Edges can look jagged, so use it only for simple graphics."
+    };
+
+    function cmpInstance(id) {
+        var el = document.getElementById(id);
+        return el && el.ej2_instances ? el.ej2_instances[0] : null;
+    }
+
+    function cmpChecked(id) {
+        var inst = cmpInstance(id);
+        return inst ? !!inst.checked : false;
+    }
+
+    function cmpSetEnabled(id, enabled) {
+        var inst = cmpInstance(id);
+        if (inst) {
+            inst.enabled = enabled;
+        }
+    }
+
+    function cmpSetGroup(groupId, enabled) {
+        var group = document.getElementById(groupId);
+        if (!group) {
+            return;
+        }
+        if (enabled) {
+            group.classList.remove("cmp-disabled");
+        } else {
+            group.classList.add("cmp-disabled");
+        }
+    }
+
+    function updateQualityWarning() {
+        var warning = document.getElementById("qualityWarning");
+        var list = cmpInstance("imageQuality");
+        var quality = list && list.value ? parseInt(list.value, 10) : 50;
+        if (warning) {
+            if (cmpChecked("compressImage") && quality < 30) {
+                warning.classList.add("cmp-visible");
+            } else {
+                warning.classList.remove("cmp-visible");
+            }
+        }
+    }
+
+    function updateAlgorithmHint() {
+        var hint = document.getElementById("algorithmHint");
+        var list = cmpInstance("downsampleAlgorithm");
+        var value = list && list.value ? list.value : "Bicubic";
+        if (hint) {
+            hint.textContent = cmpAlgorithmHints[value] || cmpAlgorithmHints.Bicubic;
+        }
+    }
+
+    function applyDependencies() {
+        var imagesOn = cmpChecked("compressImage");
+        var downsampleOn = imagesOn && cmpChecked("downsampleImages");
+
+        cmpSetEnabled("imageQuality", imagesOn);
+        cmpSetEnabled("jpxDecodeEnabled", imagesOn);
+        cmpSetEnabled("downsampleImages", imagesOn);
+        cmpSetEnabled("downsampleAlgorithm", downsampleOn);
+        cmpSetEnabled("targetDpi", downsampleOn);
+
+        cmpSetGroup("cmpImageGroup", imagesOn);
+        cmpSetGroup("cmpDownsampleGroup", downsampleOn);
+        updateQualityWarning();
+    }
+
+    function onCompressImageChanged() {
+        applyDependencies();
+    }
+
+    function onDownsampleChanged() {
+        applyDependencies();
+    }
+
+    function onQualityChanged() {
+        updateQualityWarning();
+    }
+
+    function syncDpiFromBox(value) {
+        if (value === null || value === undefined || isNaN(value)) {
+            value = 150;
+        }
+        value = Math.min(cmpDpiMax, Math.max(cmpDpiMin, Math.round(value)));
+        var box = cmpInstance("targetDpi");
+        cmpSyncing = true;
+        if (box && box.value !== value) {
+            box.value = value;
+        }
+        cmpSyncing = false;
+    }
+
+    function onDpiBoxChanged(args) {
+        if (cmpSyncing || !args) {
+            return;
+        }
+        syncDpiFromBox(args.value);
+    }
+
+    function onDpiBoxBlur() {
+        var box = cmpInstance("targetDpi");
+        if (box) {
+            syncDpiFromBox(box.value);
+        }
+    }
+
+    function onAlgorithmChanged() {
+        updateAlgorithmHint();
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        updateAlgorithmHint();
+        applyDependencies();
+    });
+</script>
+<script type="text/javascript">
+   (function worker() {
+       var ajax = new ej.base.Ajax({
+            url: '@Url.Action("GetStatus", "Pdf")',
+            success: function (data) {
+
+                if (data != "") {
+                    document.getElementById("compressStatus").innerHTML = data;
+                    document.getElementById('compressStatus').removeAttribute("style");
+
+                }
+
+
+            },
+            complete: function () {
+                setTimeout(worker, 300);
+            }
+        });
+    })();
+</script>
+<script>
+    function openPageCompress() {
+        document.getElementById('fileUploadCompress').click();
+        document.getElementById('fileUploadCompress').addEventListener('change', readFileCompress, false);
+    }
+    function readFileCompress(evt) {
+        var upoadedFiles = evt.target.files;
+        if (upoadedFiles && upoadedFiles.length > 0) {
+            var filename = upoadedFiles[0].name;
+            document.getElementById('fileNameBoxCompress').textContent = filename;
+        }
+    }
+</script>
+@section ActionDescription{
+    <div id="action-description" style="margin-top: 10px">
+        This sample demonstrates the optimization of an existing PDF document based on image quality, image downsampling, JPEG 2000 encoding, page content, metadata, and font to reduce the file size of the PDF document.
+    </div>
+}
+@section Meta{
+    <meta name="description" content="This example demonstrates the Compress Existing PDF in ASP.NET MVC PDF library. Explore here for more details."/>
+}
+@section Description{
+    <div id="description" style="margin-top: 10px">
+        This feature can be used to reduce response times in web based applications, mails and more.
+        More information about compression can be found in this documentation <a href="https://help.syncfusion.com/file-formats/pdf/working-with-compression#compressing-existing-pdf-document">section.</a>
+    </div>
+}
+@section Title{
+    <title>ASP.NET MVC PDF library - Compress Existing PDF Example - Syncfusion Demos </title>
+}
+@section Header{
+    <h1 class='sb-sample-text'>Example of Compress Existing PDF in ASP.NET MVC PDF Library</h1>
+}
+<script>
+    function appendHashToAction(form) {
+        var fileInput = document.getElementById("fileUploadCompress");
+        var error = document.getElementById("errorlabel");
+        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+            if (error) {
+                error.innerHTML = "<p class=\"cmp-error\">Choose a valid PDF file.</p>";
+            }
+            return false;
+        }
+        if (error) {
+            error.innerHTML = "";
+        }
+        try {
+            if (window && window.location && window.location.hash) {
+                // Ensure we don't duplicate the hash
+                var hash = window.location.hash;
+                if (form.action.indexOf(hash) === -1) {
+                    form.action = form.action + hash;
+                }
+            }
+        }
+        catch (e) {
+            // swallow any errors to avoid blocking form submit
+        }
+        return true;
+    }
+</script>

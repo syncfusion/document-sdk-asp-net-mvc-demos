@@ -1,0 +1,230 @@
+@model EJ2MVCSampleBrowser.Models.SignatureValidationMesssage
+
+@{
+    bool isErrorMessage =
+        Model.Message == "Browse a DOCX document and then click the button to validate digital signature" ||
+        Model.Message == "Please choose DOCX document to validate digital signature";
+
+    string textColor = isErrorMessage ? "color:red;" : "";
+}
+
+@section ControlsSection
+{
+    <div class="control-section">
+        @{
+            Html.BeginForm(
+                "digitalsignaturevalidation",
+                "word",
+                FormMethod.Post,
+                new
+                {
+                    id = "sigForm",
+                    @onsubmit = "return appendHashToAction(this);",
+                    enctype = "multipart/form-data"
+                });
+
+            {
+                <div class="tablediv" style="font-size:14px">
+                    <text class="rowdiv">
+                        Click the button to validate the digital signature using .NET Word (DocIO) Library.
+                    </text>
+                </div>
+
+                <div class="tablediv" style="font-size:14px; margin-top:10px;">
+                    <div class="rowdiv">
+                        <div class="celldiv">
+
+                            <label style="font-weight:normal">
+                                Select Document:
+                            </label>
+
+                            @Html.TextBox(
+                                "file",
+                                "",
+                                new
+                                {
+                                    type = "file",
+                                    accept = ".docx",
+                                    style = "margin-left:5px;"
+                                })
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tablediv" style="font-size:14px">
+                    <div class="rowdiv">
+                        <div class="celldiv">
+
+                            <table style="width:100%">
+                                <tr>
+                                    <td align="left">
+                                        <br />
+
+                                        <input type="submit"
+                                               class="e-btn"
+                                               value="Validate Signature"
+                                               name="SignatureValidation"
+                                               style="width:170px; text-transform:capitalize" />
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+
+                Html.EndForm();
+            }
+        }
+
+        <br />
+
+        @Html.TextAreaFor(
+            s => s.Message,
+            1,
+            1,
+            new
+            {
+                @class = "e-input",
+                @style = "width:850px; height:225px; " + textColor,
+                @readonly = "readonly"
+            })
+
+    </div>
+}
+
+@section ActionDescription
+{
+    <div id="action-description" style="margin-top:10px">
+        This sample demonstrates how to validate the digital signatures in an existing Word document using the .NET Word Library (DocIO).
+    </div>
+}
+
+@section Description
+{
+    <div>
+        With the digital signature support, you can validate the authenticity
+        and ensure the security of your documents very easily and fast.
+
+        <ul>
+            <li>
+                You can open digitally signed Word documents and allow DocIO
+                to verify the validity of the signatures, checking if they are
+                trusted or have been tampered with.
+            </li>
+
+            <li>
+                You can ensure strict document processing security by
+                programmatically checking the signature authenticity,
+                author identity, and structural document integrity.
+            </li>
+        </ul>
+    </div>
+
+    <div style="margin-top:15px">
+        More information about the Digital Signature validation can be found in this
+        <a href="https://help.syncfusion.com/document-processing/word/word-library/net/working-with-digital-signature"
+           aria-label="Documentation">
+            Documentation
+        </a>
+        section.
+    </div>
+}
+
+@section Meta
+{
+    <meta name="description"
+          content="Explore ASP.NET MVC Word Library demo to validate digital signatures in Word documents, verify authenticity, check integrity, and ensure secure processing." />
+
+    <script type="application/ld+json">
+        @Html.Raw(@"{
+            ""@context"": ""https://schema.org"",
+            ""@type"": ""SoftwareApplication"",
+            ""name"": ""Digital Signature Validation"",
+            ""applicationCategory"": ""DeveloperApplication"",
+            ""operatingSystem"": ""Any"",
+            ""description"": ""Syncfusion's Digital Signature Validation demo to validate digital signatures in a Word document and verify authenticity using validation functionality."",
+            ""url"": ""https://document.syncfusion.com/demos/word/digitalsignaturevalidation"",
+            ""publisher"": {
+                ""@type"": ""Organization"",
+                ""name"": ""Syncfusion"",
+                ""url"": ""https://syncfusion.com""
+            }
+        }")
+    </script>
+
+    <script type="application/ld+json">
+        @Html.Raw(@"{
+            ""@context"": ""https://schema.org"",
+            ""@type"": ""WebPage"",
+            ""name"": ""Digital Signature Validation - Demo"",
+            ""url"": ""https://document.syncfusion.com/demos/word/digitalsignaturevalidation"",
+            ""description"": ""Demo page showcasing how to validate digital signatures in Word documents and verify authenticity using Syncfusion's Word library."",
+            ""isPartOf"": {
+                ""@type"": ""WebSite"",
+                ""name"": ""Syncfusion Document Solutions"",
+                ""url"": ""https://syncfusion.com""
+            }
+        }")
+    </script>
+
+    <script type="application/ld+json">
+        @Html.Raw(@"{
+            ""@context"": ""https://schema.org"",
+            ""@type"": ""BreadcrumbList"",
+            ""itemListElement"": [
+                {
+                    ""@type"": ""ListItem"",
+                    ""position"": 1,
+                    ""name"": ""Document Solutions"",
+                    ""item"": ""https://document.syncfusion.com/""
+                },
+                {
+                    ""@type"": ""ListItem"",
+                    ""position"": 2,
+                    ""name"": ""Word"",
+                    ""item"": ""https://document.syncfusion.com/demos/word/""
+                },
+                {
+                    ""@type"": ""ListItem"",
+                    ""position"": 3,
+                    ""name"": ""Digital Signature Validation"",
+                    ""item"": ""https://document.syncfusion.com/demos/word/digitalsignaturevalidation""
+                }
+            ]
+        }")
+    </script>
+}
+
+@section Title
+{
+    <title>ASP.NET MVC Word Library - Digital Signature Validation Demo | Syncfusion</title>
+}
+
+@section Header
+{
+    <h1 class="sb-sample-text">
+        ASP.NET MVC Word Library - Digital Signature Validation Example
+    </h1>
+}
+
+<script>
+    function appendHashToAction(form) {
+        try {
+            if (window && window.location && window.location.hash) {
+                // Ensure we don't duplicate the hash.
+                var hash = window.location.hash;
+
+                if (form.action.indexOf(hash) === -1) {
+                    form.action = form.action + hash;
+                }
+            }
+        }
+        catch (e) {
+            // Swallow errors to avoid blocking form submission.
+        }
+
+        return true;
+    }
+</script>

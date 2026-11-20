@@ -1,0 +1,128 @@
+@section ControlsSection{
+    <div class="control-section">
+        @{Html.BeginForm("textextraction", "pdf", FormMethod.Post, new { enctype = "multipart/form-data", id = "extractText", @onsubmit = "return appendHashToAction(this);" });
+            {
+
+                <div class="tablediv" style="font-size:14px">
+                    <text class="rowdiv">
+                        Click the button to extract the text from the PDF document using Essential PDF.
+                    </text>
+                </div>
+                <div class="tablediv" style="font-size:14px">
+                    <div class="rowdiv">
+                        <div class="celldiv">
+                            <table style="width:100%">
+                                <tr>
+                                    <td align="left">
+                                        <br />
+                                        <input type="submit" class="e-btn" value="Extract Text" name="Extract" style="width: 150px; text-transform:capitalize" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="tablediv" style="font-size:14px">
+                    <div class="rowdiv">
+                        <div class="celldiv" style="border: solid 1px #788DB3; line-height: 23px; padding: 10px; ">
+                            <table style="width:100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td style="padding: 0px 0px 10px 0px">
+                                        <text>Select a PDF file to extract text from specified page.</text>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left">
+                                        <input type="button" class="e-btn" value="Choose File" onclick="openTextExtractPicker()" />
+                                        <span id="fileNameBoxTextExtract"> No file chosen </span>
+                                        <input type="file" id="fileUploadTextExtract" name="file" accept="application/pdf" style="display:block;visibility:hidden;width:0;height:0;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left">
+                                        <br />
+                                        <text>Page number to extract text &nbsp;&nbsp;&nbsp;:</text>
+                                        <input type="text" class ="e-input" id="pageNo" name="pageNumber" value="1" required style="width: 60px; height: 27px" oninput="this.value = this.value.replace(/[^0-9]/g, '')", onblur="if (this.value === null) { this.value = 1; }" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left">
+                                        <br />
+                                        <input type="submit" class="e-btn" value="Extract Text" name="extractTextFromFile" style="width: 150px; text-transform:capitalize" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div id="errorlabel" value="error">
+                            <p style="color: #FF0000;">
+                                @Html.Label("", (string)ViewData["Message"])
+                        </div>
+                    </div>
+
+                </div>
+
+                Html.EndForm();
+            }}
+    </div>
+}
+
+@section Scripts {
+    <script>
+        (function () {
+            var fileInput = document.getElementById('fileUploadTextExtract');
+            if (fileInput) {
+                fileInput.addEventListener('change', function () {
+                    if (this.files && this.files.length > 0) {
+                        document.getElementById('fileNameBoxTextExtract').textContent = this.files[0].name;
+                    } else {
+                        document.getElementById('fileNameBoxTextExtract').textContent = ' No file chosen ';
+                    }
+                }, false);
+            }
+        })();
+
+        function openTextExtractPicker() {
+            document.getElementById('fileUploadTextExtract').click();
+        }
+    </script>
+}
+
+@section ActionDescription{
+    <div id="action-description" style="margin-top: 10px">
+        This sample demonstrates how to extract the text from the PDF document.
+    </div>
+}
+@section Meta{
+                    <meta name="description" content="This example demonstrates the Text Extraction in ASP.NET MVC PDF library. Explore here for more details."/>
+                }
+@section Description{
+    <div id="description" style="margin-top: 10px">
+        This feature can be used to extract information such as user data, billing information from invoice, address, and so on from the PDF document for indexing and archiving.
+        More information about the text extraction can be found in this documentation <a href="https://help.syncfusion.com/file-formats/pdf/working-with-text-extraction">section.</a>
+    </div>
+}
+
+@section Title{
+                    <title>ASP.NET MVC PDF library - Text Extraction Example - Syncfusion Demos </title> 
+                }
+@section Header{
+                    <h1 class='sb-sample-text'>Example of Text Extraction in ASP.NET MVC PDF Library</h1>
+                }
+<script>
+    function appendHashToAction(form) {
+        try {
+            if (window && window.location && window.location.hash) {
+                // Ensure we don't duplicate the hash
+                var hash = window.location.hash;
+                if (form.action.indexOf(hash) === -1) {
+                    form.action = form.action + hash;
+                }
+            }
+        }
+        catch (e) {
+            // swallow any errors to avoid blocking form submit
+        }
+        return true;
+    }
+</script>
